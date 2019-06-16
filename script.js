@@ -6,7 +6,29 @@ const fs = require('fs'),
         format: 'json'
     }),
     user = "Sean12697",
-    url_top = `https://untappd.com/user/${user}/beers?sort=highest_rated_their`;
+    url_sort = `https://untappd.com/user/${user}/beers?sort=`,
+    // sorts = ["highest_rated_their", "lowest_rated_their", "beer_name_asc", "beer_name_desc", "brewery_name_asc", "brewery_name_desc", "date", "date_asc"]
+    sorts = ["highest_rated_their", "lowest_rated_their"]
+urls = sorts.map(sort => url_sort + sort);
+
+
+async function getUniqueBeersWithFlavours(urls) {
+    return new Promise(resolve => {
+        getUniqueBeers(urls).then(beers => {
+            let merged = [].concat.apply([], beers);
+            Promise.all(merged.map(getFlavours)).then(resolve);
+        });
+    });
+}
+
+async function getUniqueBeers(urls) {
+    return new Promise(resolve => {
+        Promise.all(urls.map(getBeers)).then(beers => {
+            let merged = [].concat.apply([], beers);
+            resolve(removeDuplicates(merged, "name"));
+        });
+    });
+}
 
 async function getBeersWithFlavour(url) {
     return new Promise(resolve => {
@@ -61,6 +83,33 @@ function beerJSON(beerHTML) {
         last_checkin_url: 'https://untappd.com' + $('.details p:nth-child(4) a', beerHTML).attr().href
     }
 }
-getBeersWithFlavour(url_top).then(data => {
-    fs.writeFileSync(`beers.json`, beaut(data), () => {});
+
+// https://stackoverflow.com/questions/2218999/remove-duplicates-from-an-array-of-objects-in-javascript
+function removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject = {};
+
+    for (var i in originalArray) {
+        lookupObject[originalArray[i][prop]] = originalArray[i];
+    }
+
+    for (i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+    return newArray;
+}
+
+// getBeersWithFlavour(urls[0]).then(data => {
+//     fs.writeFileSync(`beers.json`, beaut(data), () => {});
+// });
+
+// getUniqueBeersWithFlavours(urls).then(data => {
+//     fs.writeFileSync(`beers.json`, beaut(data), () => {});
+// });
+
+getBeersWithFlavour(urls[0]).then(best => {
+    getBeersWithFlavour(urls[1]).then(worst => {
+        let merged = [].concat.apply([], [best, worst]);
+        fs.writeFileSync(`beers.json`, beaut(merged), () => {});
+    });
 });
