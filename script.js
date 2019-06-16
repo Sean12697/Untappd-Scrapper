@@ -8,6 +8,31 @@ const fs = require('fs'),
     user = "Sean12697",
     url_top = `https://untappd.com/user/${user}/beers?sort=highest_rated_their`;
 
+async function getBeersWithFlavour(url) {
+    return new Promise(resolve => {
+        getBeers(url).then(beers => {
+            Promise.all(beers.map(getFlavours)).then(resolve);
+        });
+    });
+}
+
+async function getFlavours(beerJSON) {
+    return new Promise(resolve => {
+        rp(beerJSON.last_checkin_url)
+            .then(html => {
+                let flavours = [];
+                let loaded = $.load(html);
+                loaded('.flavor li').each((index, element) => flavours.push($('span', element).text()));
+                beerJSON.flavours = flavours;
+                resolve(beerJSON);
+            })
+            .catch(err => {
+                //handle error
+                console.log("Getting Flavours Error", err)
+            });
+    });
+}
+
 async function getBeers(url) {
     return new Promise(resolve => {
         rp(url)
@@ -19,7 +44,7 @@ async function getBeers(url) {
             })
             .catch(err => {
                 //handle error
-                console.log("Error", err)
+                console.log("Getting Beers Error", err)
             });
     });
 }
@@ -36,7 +61,6 @@ function beerJSON(beerHTML) {
         last_checkin_url: 'https://untappd.com' + $('.details p:nth-child(4) a', beerHTML).attr().href
     }
 }
-
-getBeers(url_top).then(data => {
+getBeersWithFlavour(url_top).then(data => {
     fs.writeFileSync(`beers.json`, beaut(data), () => {});
 });
