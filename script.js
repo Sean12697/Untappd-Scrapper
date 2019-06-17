@@ -8,7 +8,7 @@ const fs = require('fs'),
     user = "Sean12697",
     url_sort = `https://untappd.com/user/${user}/beers?sort=`,
     // sorts = ["highest_rated_their", "lowest_rated_their", "beer_name_asc", "beer_name_desc", "brewery_name_asc", "brewery_name_desc", "date", "date_asc"]
-    sorts = ["highest_rated_their", "lowest_rated_their"]
+    sorts = ["highest_rated_their", "lowest_rated_their", "date"]
 urls = sorts.map(sort => url_sort + sort);
 
 
@@ -46,6 +46,10 @@ async function getFlavours(beerJSON) {
                 let loaded = $.load(html);
                 loaded('.flavor li').each((index, element) => flavours.push($('span', element).text()));
                 beerJSON.flavours = flavours;
+                beerJSON.last_location = $('.location a', html).text();
+                beerJSON.comment = $('.comment', html).text().replace(/[\n]/g, "").trim();
+                beerJSON.serving = $('.serving span', html).text().replace(/\s/g, "");
+                delete beerJSON.last_checkin_url;
                 resolve(beerJSON);
             })
             .catch(err => {
@@ -109,7 +113,10 @@ function removeDuplicates(originalArray, prop) {
 
 getBeersWithFlavour(urls[0]).then(best => {
     getBeersWithFlavour(urls[1]).then(worst => {
-        let merged = [].concat.apply([], [best, worst]);
-        fs.writeFileSync(`beers.json`, beaut(merged), () => {});
+        // getBeersWithFlavour(urls[2]).then(recent => {
+            let merged = [].concat.apply([], [best, worst]);
+            let unique = removeDuplicates(merged, "name");
+            fs.writeFileSync(`beers.json`, beaut(unique), () => {});
+        // });
     });
 });
