@@ -8,3 +8,11 @@ patch:
         patched: '2020-03-02T09:57:08.684Z'
     - request-promise > request-promise-core > lodash:
         patched: '2020-03-02T09:57:08.684Z'
+    - snyk > @snyk/dep-graph > lodash:
+        patched: '2020-03-02T09:58:59.591Z'
+    - snyk > @snyk/snyk-cocoapods-plugin > @snyk/dep-graph > lodash:
+        patched: '2020-03-02T09:58:59.591Z'
+    - snyk > snyk-nuget-plugin > dotnet-deps-parser > lodash:
+        patched: '2020-03-02T09:58:59.591Z'
+    - snyk > @snyk/snyk-cocoapods-plugin > @snyk/cocoapods-lockfile-parser > @snyk/dep-graph > lodash:
+        patched: '2020-03-02T09:58:59.591Z'
