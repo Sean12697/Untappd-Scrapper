@@ -5,7 +5,7 @@
   "main": "untappd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "author": "",
@@ -14,7 +14,7 @@
     "cheerio": "^1.0.0-rc.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "snyk": "^1.297.3"
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "beautify": "0.0.8",
