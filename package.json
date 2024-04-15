@@ -13,8 +13,8 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4",
-    "snyk": "^1.297.3"
+    "request-promise": "^4.2.6",
+    "snyk": "^1.996.0"
   },
   "devDependencies": {
     "beautify": "0.0.8",
